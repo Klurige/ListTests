@@ -1,5 +1,7 @@
 package cc.co.klurige.list.db.test;
 
+import java.sql.SQLException;
+
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
@@ -16,6 +18,19 @@ public class DatabaseCreationTests extends AndroidTestCase {
     mCtx = new IsolatedContext(null, this.getContext());
     setContext(mCtx);
     mDbHelper = DatabaseAdapter.getDatabaseAdapter(mCtx);
+  }
+
+  public void testCreation() {
+    boolean isSucceeded;
+    try {
+      mDbHelper.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    mDbHelper.open();
+    isSucceeded = mDbHelper.getDB().isOpen();
+    mDbHelper.close();
+    assertTrue("Couldn't create the database.", isSucceeded);
   }
 
   @Override
