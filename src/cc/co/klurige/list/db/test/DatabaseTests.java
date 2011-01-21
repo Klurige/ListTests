@@ -33,7 +33,6 @@ public class DatabaseTests extends AndroidTestCase {
   }
 
   public void testPreConditions() {
-    assertNotNull(mDbHelper);
     assertTrue(mDbHelper.getDB().isOpen());
   }
 
