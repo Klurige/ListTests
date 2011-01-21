@@ -3,3 +3,4 @@ gen
 .settings/
 ActivityStates.txt
 local.properties
+coverage
