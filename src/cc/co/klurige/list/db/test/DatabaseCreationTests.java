@@ -36,6 +36,7 @@ public class DatabaseCreationTests extends AndroidTestCase {
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    assertTrue("Database was not properly closed.", (mDbHelper.getDB() == null));
   }
 
   public void testPreConditions() {
