@@ -1,7 +1,5 @@
 package cc.co.klurige.list.db.test;
 
-import java.sql.SQLException;
-
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
@@ -37,18 +35,6 @@ public class DatabaseTests extends AndroidTestCase {
   public void testPreConditions() {
     assertNotNull(mDbHelper);
     assertTrue(mDbHelper.getDB().isOpen());
-  }
-
-  public void testDeleteNotAllowed() {
-    String msg = null;
-    try {
-      mDbHelper.delete();
-    } catch (SQLException e) {
-      // Database is open, so it should throw.
-      msg = e.getMessage();
-    }
-
-    assertEquals("Should not have succeeded", "Could not delete database. Not closed.", msg);
   }
 
   public void testGetCategoriesTable() {

@@ -33,6 +33,21 @@ public class DatabaseCreationTests extends AndroidTestCase {
     assertTrue("Couldn't create the database.", isSucceeded);
   }
 
+  public void testDeleteNotAllowed() {
+    mDbHelper.open();
+    String msg = null;
+    try {
+      mDbHelper.delete();
+    } catch (SQLException e) {
+      // Database is open, so it should throw.
+      msg = e.getMessage();
+    }
+
+    mDbHelper.close();
+
+    assertEquals("Should not have succeeded", "Could not delete database. Not closed.", msg);
+  }
+
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
