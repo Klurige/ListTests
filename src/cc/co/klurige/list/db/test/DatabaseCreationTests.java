@@ -9,7 +9,7 @@ import cc.co.klurige.list.database.DatabaseAdapter;
 
 public class DatabaseCreationTests extends AndroidTestCase {
 
-  private DatabaseAdapter mDbHelper;
+  private DatabaseAdapter mDbAdapter;
   private Context         mCtx;
 
   @Override
@@ -17,7 +17,7 @@ public class DatabaseCreationTests extends AndroidTestCase {
     super.setUp();
     mCtx = new IsolatedContext(null, this.getContext());
     setContext(mCtx);
-    mDbHelper = DatabaseAdapter.getDatabaseAdapter(mCtx);
+    mDbAdapter = DatabaseAdapter.getDatabaseAdapter(mCtx);
   }
 
   public void testCreation() {
@@ -51,10 +51,43 @@ public class DatabaseCreationTests extends AndroidTestCase {
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
-    assertTrue("Database was not properly closed.", (mDbHelper.getDB() == null));
+    assertTrue("Database was not properly closed.", (mDbAdapter.getDB() == null));
   }
 
   public void testPreConditions() {
-    assertNotNull(mDbHelper);
+    assertNotNull(mDbAdapter);
   }
+
+  public void testUpgradeFrom1() {
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    DatabaseHelper_ver1 mDbHelper = new DatabaseHelper_ver1(mCtx);
+    mDbHelper.getWritableDatabase();
+    mDbHelper.close();
+
+    mDbAdapter.open();
+    boolean isSucceeded = mDbAdapter.getDB().isOpen();
+    mDbAdapter.close();
+    assertTrue("Couldn't upgrade the database from  version 1.", isSucceeded);
+  }
+
+  public void testUpgradeFrom2() {
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    DatabaseHelper_ver2 mDbHelper = new DatabaseHelper_ver2(mCtx);
+    mDbHelper.getWritableDatabase();
+    mDbHelper.close();
+
+    mDbAdapter.open();
+    boolean isSucceeded = mDbAdapter.getDB().isOpen();
+    mDbAdapter.close();
+    assertTrue("Couldn't upgrade the database from  version 2.", isSucceeded);
+  }
+
 }
