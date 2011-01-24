@@ -3,16 +3,11 @@ package cc.co.klurige.list.db.test;
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
-import cc.co.klurige.list.database.Categories;
 import cc.co.klurige.list.database.DatabaseAdapter;
-import cc.co.klurige.list.database.Items;
-import cc.co.klurige.list.database.Lists;
-import cc.co.klurige.list.database.Ticklists;
-import cc.co.klurige.list.database.Units;
 
 public class DatabaseTests extends AndroidTestCase {
 
-  private DatabaseAdapter mDbHelper;
+  private DatabaseAdapter mDbAdapter;
   private Context         mCtx;
 
   @Override
@@ -20,20 +15,20 @@ public class DatabaseTests extends AndroidTestCase {
     super.setUp();
     mCtx = new IsolatedContext(null, this.getContext());
     setContext(mCtx);
-    mDbHelper = DatabaseAdapter.getDatabaseAdapter(mCtx);
+    mDbAdapter = DatabaseAdapter.getDatabaseAdapter(mCtx);
 
-    mDbHelper.open();
+    mDbAdapter.open();
   }
 
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
-    mDbHelper.close();
-    mDbHelper.delete();
+    mDbAdapter.close();
+    mDbAdapter.delete();
   }
 
   public void testPreConditions() {
-    assertTrue(mDbHelper.getDB().isOpen());
+    assertTrue(mDbAdapter.getDB().isOpen());
   }
 
   public void testGetCategoriesTable() {
