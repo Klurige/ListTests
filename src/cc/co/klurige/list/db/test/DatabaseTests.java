@@ -31,28 +31,4 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(mDbAdapter.getDB().isOpen());
   }
 
-  public void testGetCategoriesTable() {
-    Categories tbl = mDbHelper.getCategoriesTable();
-    assertNotNull(tbl);
-  }
-
-  public void testGetUnitsTable() {
-    Units tbl = mDbHelper.getUnitsTable();
-    assertNotNull(tbl);
-  }
-
-  public void testGetItemsTable() {
-    Items tbl = mDbHelper.getItemsTable();
-    assertNotNull(tbl);
-  }
-
-  public void testGetTicklistsTable() {
-    Ticklists tbl = mDbHelper.getTicklistsTable();
-    assertNotNull(tbl);
-  }
-
-  public void testGetListsTable() {
-    Lists tbl = mDbHelper.getListsTable();
-    assertNotNull(tbl);
-  }
 }
