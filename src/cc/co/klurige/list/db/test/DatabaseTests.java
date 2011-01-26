@@ -46,14 +46,14 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank unit is added.
     assertTrue("Newly created unit should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of units is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
 
@@ -65,7 +65,7 @@ public class DatabaseTests extends AndroidTestCase {
     } catch (IllegalArgumentException e) {
       isSuccess = true;
     }
-    assertTrue("unit with faulty name created", isSuccess);
+    assertTrue("entry with faulty name created", isSuccess);
   }
 
   public void testUnitCreateDuplicate() {
@@ -80,7 +80,7 @@ public class DatabaseTests extends AndroidTestCase {
     } catch (IllegalArgumentException e) {
       isSuccess = true;
     }
-    assertTrue("unit with duplicated name created", isSuccess);
+    assertTrue("entry with duplicated name created", isSuccess);
   }
 
   public void testUnitCreateDeleted() {
@@ -97,14 +97,14 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank unit is added.
     assertTrue("Newly created unit should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of units is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
 
@@ -185,22 +185,22 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetch();
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 1, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
 
     assertTrue("Cursor cannot advance.", result.moveToNext());
-    assertEquals("Value of unit column 0 is wrong.", 3, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "liter", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 3, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "liter", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
   }
 
   public void testUnitFetchOnName() {
@@ -210,10 +210,10 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetch("kg");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 1, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     result.close();
   }
 
@@ -224,10 +224,10 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetch("");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 1, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 1, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     result.close();
   }
 
@@ -253,14 +253,14 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetch(2);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
 
@@ -276,27 +276,27 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetchAll(2);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 512, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 512, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
 
     result = DatabaseAdapter.getUnitsTable().fetchAll(3);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 3, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "liter", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 3, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "liter", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
 
   }
@@ -312,12 +312,12 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting("k");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
   }
 
@@ -332,12 +332,12 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting(null);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
   }
 
@@ -367,14 +367,14 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank unit is added.
     assertTrue("Newly created unit should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of units is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "Kg", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Kg", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
 
@@ -392,7 +392,7 @@ public class DatabaseTests extends AndroidTestCase {
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
     assertEquals("Value of category column 0 is wrong.", 2, result.getLong(0));
     assertEquals("Name of category column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of category column 1 is wrong.", "chark", result.getString(1));
+    assertEquals("Value of category column 1 is wrong.", "Chark", result.getString(1));
     assertEquals("Name of category column 1 is wrong.", "name", result.getColumnName(1));
     assertEquals("Value of category column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of category column 2 is wrong.", "status", result.getColumnName(2));
@@ -407,7 +407,7 @@ public class DatabaseTests extends AndroidTestCase {
     } catch (IllegalArgumentException e) {
       isSuccess = true;
     }
-    assertTrue("item with faulty name created", isSuccess);
+    assertTrue("entry with faulty name created", isSuccess);
   }
 
   public void testCategoryCreateDuplicate() {
@@ -422,7 +422,7 @@ public class DatabaseTests extends AndroidTestCase {
     } catch (IllegalArgumentException e) {
       isSuccess = true;
     }
-    assertTrue("item with duplicated name created", isSuccess);
+    assertTrue("entry with duplicated name created", isSuccess);
   }
 
   public void testCategoryCreateDeleted() {
@@ -440,7 +440,7 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank category is added.
     assertTrue("Newly created item should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of items is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
     assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
@@ -528,22 +528,22 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch();
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of units is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 1, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
 
     assertTrue("Cursor cannot advance.", result.moveToNext());
-    assertEquals("Value of unit column 0 is wrong.", 3, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "Mejeri", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 3, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Mejeri", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
   }
 
   public void testCategoryFetchOnName() {
@@ -553,10 +553,10 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch("Chark");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 1, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     result.close();
   }
 
@@ -567,10 +567,10 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch("");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 1, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 1, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     result.close();
   }
 
@@ -596,14 +596,14 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "Chark", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Chark", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
 
@@ -618,28 +618,28 @@ public class DatabaseTests extends AndroidTestCase {
 
     Cursor result = DatabaseAdapter.getCategoriesTable().fetchAll(2);
     assertTrue("Cursor is empty", result.moveToFirst());
-    // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    // Upon creation, blank category is added.
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "Chark", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 512, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Chark", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 512, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
 
     result = DatabaseAdapter.getCategoriesTable().fetchAll(3);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 3, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "Mejeri", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 3, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Mejeri", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
 
   }
@@ -654,13 +654,13 @@ public class DatabaseTests extends AndroidTestCase {
 
     Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("M");
     assertTrue("Cursor is empty", result.moveToFirst());
-    // Upon creation, blank unit is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    // Upon creation, blank category is added.
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "Chark", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Chark", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
   }
 
@@ -680,12 +680,12 @@ public class DatabaseTests extends AndroidTestCase {
     assertFalse("Vad skall egentligen fetchStarting returnera?", true);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of units is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
   }
 
@@ -716,14 +716,14 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank category is added.
     assertTrue("Newly created unit should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of units is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of unit column 0 is wrong.", 2, result.getLong(0));
-    assertEquals("Name of unit column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of unit column 1 is wrong.", "chark", result.getString(1));
-    assertEquals("Name of unit column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of unit column 2 is wrong.", 0, result.getInt(2));
-    assertEquals("Name of unit column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "chark", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
 
@@ -810,7 +810,7 @@ public class DatabaseTests extends AndroidTestCase {
             null, null, null, null);
 
     assertTrue(result.moveToFirst());
-    assertEquals("Number of items is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
     assertEquals("Value of items column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of items column 0 is wrong.", "_id", result.getColumnName(0));
@@ -895,7 +895,7 @@ public class DatabaseTests extends AndroidTestCase {
             null,
             null, null, null, null);
     assertTrue(result.moveToFirst());
-    assertEquals("Number of items is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 8, result.getColumnCount());
     assertEquals("Value of items column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of items column 0 is wrong.", "_id", result.getColumnName(0));
