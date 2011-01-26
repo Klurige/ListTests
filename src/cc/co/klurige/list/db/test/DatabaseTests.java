@@ -354,9 +354,10 @@ public class DatabaseTests extends AndroidTestCase {
   }
 
   public void testUnitUpdate() {
-    // Call creation test to get something to update.
-    testUnitCreate();
     ContentValues args = new ContentValues();
+    args.put(Key.NAME, "kg");
+    DatabaseAdapter.getUnitsTable().create(args);
+    args = new ContentValues();
     args.put(Key.NAME, "Kg");
     assertTrue(DatabaseAdapter.getUnitsTable().update(2, args));
 
