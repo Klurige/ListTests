@@ -9,6 +9,7 @@ import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import cc.co.klurige.list.database.DatabaseAdapter;
 import cc.co.klurige.list.database.Table.Key;
+import cc.co.klurige.list.database.Table.Status;
 
 public class DatabaseTests extends AndroidTestCase {
 
@@ -57,7 +58,7 @@ public class DatabaseTests extends AndroidTestCase {
     result.close();
   }
 
-  public void testUnitCreateFaultyName() {
+  public void testUnitCreateMissingName() {
     boolean isSuccess = false;
     ContentValues args = new ContentValues();
     try {
@@ -65,22 +66,33 @@ public class DatabaseTests extends AndroidTestCase {
     } catch (IllegalArgumentException e) {
       isSuccess = true;
     }
-    assertTrue("entry with faulty name created", isSuccess);
+    assertTrue("entry with missing name created", isSuccess);
+  }
+
+  public void testUnitCreateNullName() {
+    boolean isSuccess = false;
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, (String) null);
+    try {
+      DatabaseAdapter.getUnitsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("entry with null name created", isSuccess);
   }
 
   public void testUnitCreateDuplicate() {
-    boolean isSuccess = false;
     ContentValues args = new ContentValues();
     args.put(Key.NAME, "kg");
     DatabaseAdapter.getUnitsTable().create(args);
     args = new ContentValues();
     args.put(Key.NAME, "kg");
-    try {
-      DatabaseAdapter.getUnitsTable().create(args);
-    } catch (IllegalArgumentException e) {
-      isSuccess = true;
-    }
-    assertTrue("entry with duplicated name created", isSuccess);
+    long result = DatabaseAdapter.getUnitsTable().create(args);
+    assertEquals("entry with duplicated name created", -Status.ERROR, result);
+    Cursor cur = DatabaseAdapter.getUnitsTable().fetch("Chark");
+    assertFalse("Cursor is not empty", cur.moveToFirst());
+    assertEquals("Wrong number of entries in cursor", 1, cur.getCount());
+    cur.close();
   }
 
   public void testUnitCreateDeleted() {
@@ -117,6 +129,16 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetch(2);
     assertFalse("Cursor is not empty.", result.moveToFirst());
     result.close();
+  }
+
+  public void testUnitDeleteNonExisting() {
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getUnitsTable().delete(2);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Managed to delete non-existent entry.", isSuccess);
   }
 
   public void testUnitDeleteFailedItem() {
@@ -319,6 +341,35 @@ public class DatabaseTests extends AndroidTestCase {
     assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
+    result = DatabaseAdapter.getUnitsTable().fetchStarting("X");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testUnitFetchStartingLower() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Kg");
+    DatabaseAdapter.getUnitsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Liter");
+    DatabaseAdapter.getUnitsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting("k");
+    assertTrue("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testUnitFetchStartingUpper() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "kg");
+    DatabaseAdapter.getUnitsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "liter");
+    DatabaseAdapter.getUnitsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting("K");
+    assertTrue("Cursor is not empty", result.moveToFirst());
+    result.close();
   }
 
   public void testUnitFetchStartingEmpty() {
@@ -332,11 +383,9 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting(null);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank unit is added.
-    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 3, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
-    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of column 1 is wrong.", "kg", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
   }
@@ -399,7 +448,7 @@ public class DatabaseTests extends AndroidTestCase {
     result.close();
   }
 
-  public void testCategoryCreateFaultyName() {
+  public void testCategoryCreateMissingName() {
     boolean isSuccess = false;
     ContentValues args = new ContentValues();
     try {
@@ -407,22 +456,33 @@ public class DatabaseTests extends AndroidTestCase {
     } catch (IllegalArgumentException e) {
       isSuccess = true;
     }
-    assertTrue("entry with faulty name created", isSuccess);
+    assertTrue("entry with missing name created", isSuccess);
+  }
+
+  public void testCategoryCreateNullName() {
+    boolean isSuccess = false;
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, (String) null);
+    try {
+      DatabaseAdapter.getCategoriesTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("entry with null name created", isSuccess);
   }
 
   public void testCategoryCreateDuplicate() {
-    boolean isSuccess = false;
     ContentValues args = new ContentValues();
     args.put(Key.NAME, "Chark");
     DatabaseAdapter.getCategoriesTable().create(args);
     args = new ContentValues();
     args.put(Key.NAME, "Chark");
-    try {
-      DatabaseAdapter.getCategoriesTable().create(args);
-    } catch (IllegalArgumentException e) {
-      isSuccess = true;
-    }
-    assertTrue("entry with duplicated name created", isSuccess);
+    long result = DatabaseAdapter.getCategoriesTable().create(args);
+    assertEquals("entry with duplicated name created", -Status.ERROR, result);
+    Cursor cur = DatabaseAdapter.getCategoriesTable().fetch("Chark");
+    assertTrue("Cursor is empty", cur.moveToFirst());
+    assertEquals("Wrong number of entries in cursor", 1, cur.getCount());
+    cur.close();
   }
 
   public void testCategoryCreateDeleted() {
@@ -460,6 +520,16 @@ public class DatabaseTests extends AndroidTestCase {
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
     assertFalse("Cursor is not empty.", result.moveToFirst());
     result.close();
+  }
+
+  public void testCategoryDeleteNonExisting() {
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getCategoriesTable().delete(2);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Managed to delete non-existent entry.", isSuccess);
   }
 
   public void testCategoryDeleteFailedItem() {
@@ -652,7 +722,7 @@ public class DatabaseTests extends AndroidTestCase {
     args.put(Key.NAME, "Mejeri");
     DatabaseAdapter.getCategoriesTable().create(args);
 
-    Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("M");
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("C");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
     assertEquals("Number of entries is wrong.", 1, result.getCount());
@@ -662,10 +732,35 @@ public class DatabaseTests extends AndroidTestCase {
     assertEquals("Value of column 1 is wrong.", "Chark", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     result.close();
+    result = DatabaseAdapter.getCategoriesTable().fetchStarting("X");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
   }
 
   public void testCategoryFetchStartingLower() {
-    assertFalse("Test not implemented", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Chark");
+    DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Mejeri");
+    DatabaseAdapter.getCategoriesTable().create(args);
+
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("c");
+    assertTrue("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testCategoryFetchStartingUpper() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "chark");
+    DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "mejeri");
+    DatabaseAdapter.getCategoriesTable().create(args);
+
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("C");
+    assertTrue("Cursor is not empty", result.moveToFirst());
+    result.close();
   }
 
   public void testCategoryFetchStartingEmpty() {
@@ -677,12 +772,10 @@ public class DatabaseTests extends AndroidTestCase {
     DatabaseAdapter.getCategoriesTable().create(args);
 
     Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting(null);
-    assertFalse("Vad skall egentligen fetchStarting returnera?", true);
     assertTrue("Cursor is empty", result.moveToFirst());
-    // Upon creation, blank category is added.
-    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 3, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
-    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of column 1 is wrong.", "", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
@@ -729,7 +822,7 @@ public class DatabaseTests extends AndroidTestCase {
 
   public void testListCreate() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "matlista");
+    args.put(Key.NAME, "20110126");
     final Date ts_before = new Date();
     DatabaseAdapter.getListsTable().create(args);
     final Date ts_after = new Date();
@@ -741,7 +834,7 @@ public class DatabaseTests extends AndroidTestCase {
     assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
     assertEquals("Value of list column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of list should column 1 is wrong.", "matlista", result.getString(1));
+    assertEquals("Value of list should column 1 is wrong.", "20110126", result.getString(1));
     assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
     assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
@@ -751,55 +844,379 @@ public class DatabaseTests extends AndroidTestCase {
     result.close();
   }
 
-  public void testListsDelete() {
-    assertFalse("Test not implemented.", true);
+  public void testListCreateMissingName() {
+    boolean isSuccess = false;
+    ContentValues args = new ContentValues();
+    try {
+      DatabaseAdapter.getListsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("entry with missing name created", isSuccess);
   }
 
-  public void testListsUndelete() {
-    assertFalse("Test not implemented.", true);
+  public void testListCreateNullName() {
+    boolean isSuccess = false;
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, (String) null);
+    try {
+      DatabaseAdapter.getListsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("entry with null name created", isSuccess);
   }
 
-  public void testListsFetch() {
-    assertFalse("Test not implemented.", true);
+  public void testListCreateDuplicate() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long result = DatabaseAdapter.getListsTable().create(args);
+    assertEquals("entry with duplicated name created", -Status.ERROR, result);
+    Cursor cur = DatabaseAdapter.getListsTable().fetch("20110126");
+    assertTrue("Cursor is empty", cur.moveToFirst());
+    assertEquals("Wrong number of entries in cursor", 1, cur.getCount());
+    cur.close();
+
   }
 
-  public void testListsFetchOnName() {
-    assertFalse("Test not implemented.", true);
+  public void testListCreateDeleted() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    DatabaseAdapter.getListsTable().delete(1);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    Cursor result =
+        mDbAdapter.getDB().query(DatabaseAdapter.getListsTable().getTableName(), null, null,
+            null,
+            null, null, null, null);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of lists is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
+    assertEquals("Value of list column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of list should column 1 is wrong.", "20110126", result.getString(1));
+    assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Name of list column 3 is wrong.", "timestamp", result.getColumnName(3));
+    result.close();
   }
 
-  public void testListsFetchOnId() {
-    assertFalse("Test not implemented.", true);
+  public void testListDelete() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+
+    assertTrue(DatabaseAdapter.getListsTable().delete(1));
+    Cursor result = DatabaseAdapter.getListsTable().fetch(1);
+    assertFalse("Cursor is not empty.", result.moveToFirst());
+    result.close();
   }
 
-  public void testListsFetchAll() {
-    assertFalse("Test not implemented.", true);
+  public void testListDeleteNonExisting() {
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getListsTable().delete(2);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Managed to delete non-existent entry.", isSuccess);
   }
 
-  public void testListsFetchDeleted() {
-    assertFalse("Test not implemented.", true);
+  public void testListDeleteTicklistItemNotPicked() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long listid = DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long itemid = DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.ITEM, itemid);
+    args.put(Key.LIST, listid);
+    DatabaseAdapter.getTicklistsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getTicklistsTable().fetch(1);
+    assertTrue("Cursor empty", result.moveToFirst());
+    result.close();
+    assertTrue(DatabaseAdapter.getListsTable().delete(1));
+    result = DatabaseAdapter.getTicklistsTable().fetch(1);
+    assertFalse("Cursor not empty", result.moveToFirst());
+    result.close();
   }
 
-  public void testListsFetchDeletedOnName() {
-    assertFalse("Test not implemented.", true);
+  public void testListDeleteTicklistItemPicked() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long listid = DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long itemid = DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.ITEM, itemid);
+    args.put(Key.LIST, listid);
+    DatabaseAdapter.getTicklistsTable().create(args);
+    DatabaseAdapter.getTicklistsTable().pickItem(1);
+
+    Cursor result = DatabaseAdapter.getTicklistsTable().fetch(1);
+    assertTrue("Cursor empty", result.moveToFirst());
+    result.close();
+    assertTrue(DatabaseAdapter.getListsTable().delete(1));
+    result = DatabaseAdapter.getTicklistsTable().fetch(1);
+    assertFalse("Cursor not empty", result.moveToFirst());
+    result.close();
   }
 
-  public void testListsFetchDeletedOnId() {
-    assertFalse("Test not implemented.", true);
+  public void testListUndelete() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long listid = DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long itemid = DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.ITEM, itemid);
+    args.put(Key.LIST, listid);
+    DatabaseAdapter.getTicklistsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    itemid = DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.ITEM, itemid);
+    args.put(Key.LIST, listid);
+    DatabaseAdapter.getTicklistsTable().create(args);
+    DatabaseAdapter.getTicklistsTable().delete(1);
+
+    DatabaseAdapter.getListsTable().undelete(1);
+
+    // Both ticklist items should be undeleted.
+    Cursor result = DatabaseAdapter.getListsTable().fetch(1);
+    assertTrue("Cursor empty", result.moveToFirst());
+    result.close();
+    result = DatabaseAdapter.getTicklistsTable().fetch();
+    assertEquals("CWrong number of entries in cursor", 2, result.getCount());
   }
 
-  public void testListsFetchStarting() {
-    assertFalse("Test not implemented.", true);
+  public void testListFetch() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    DatabaseAdapter.getListsTable().create(args);
+    assertTrue(DatabaseAdapter.getListsTable().delete(2));
+
+    Cursor result = DatabaseAdapter.getListsTable().fetch();
+    assertTrue("Cursor is empty", result.moveToFirst());
+    assertEquals("Number of lists is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
+    assertEquals("Value of list column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of list should column 1 is wrong.", "20110126", result.getString(1));
+    assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Name of list column 3 is wrong.", "timestamp", result.getColumnName(3));
+
+    assertTrue("Cursor cannot advance.", result.moveToNext());
+    assertEquals("Value of list column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of list should column 1 is wrong.", "20110127", result.getString(1));
+    assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Name of list column 3 is wrong.", "timestamp", result.getColumnName(3));
   }
 
-  public void testListsIsDeleted() {
-    assertFalse("Test not implemented.", true);
+  public void testListFetchOnName() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetch("20110126");
+    assertTrue("Cursor is empty", result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 1, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    result.close();
   }
 
-  public void testListsUpdate() {
-    assertFalse("Test not implemented.", true);
+  public void testListFetchOnNameBlank() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    Cursor result = DatabaseAdapter.getListsTable().fetch("");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
   }
 
-  public void testItemCreate() {
+  public void testListFetchEmpty() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+
+    boolean isSuccess = false;
+    try {
+      Cursor result = DatabaseAdapter.getListsTable().fetch(null);
+      result.close();
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Fetch accepted null pointer", isSuccess);
+  }
+
+  public void testListFetchOnId() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    Cursor result = DatabaseAdapter.getListsTable().fetch(1);
+    assertTrue("Cursor is empty", result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "20110126", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
+    result.close();
+  }
+
+  public void testListFetchAll() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    DatabaseAdapter.getListsTable().create(args);
+    assertTrue(DatabaseAdapter.getListsTable().delete(1));
+
+    Cursor result = DatabaseAdapter.getListsTable().fetchAll(1);
+    assertTrue("Cursor is empty", result.moveToFirst());
+    // Upon creation, blank category is added.
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "20110126", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 512, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
+    result.close();
+
+    result = DatabaseAdapter.getCategoriesTable().fetchAll(2);
+    assertTrue("Cursor is empty", result.moveToFirst());
+    // Upon creation, blank category is added.
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "20110126", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
+    result.close();
+
+  }
+
+  public void testListFetchStarting() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    DatabaseAdapter.getListsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getListsTable().fetchStarting("2");
+    assertTrue("Cursor is empty", result.moveToFirst());
+    // Upon creation, blank category is added.
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
+    assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "20110126", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    result.close();
+    result = DatabaseAdapter.getListsTable().fetchStarting("X");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testListFetchStartingLower() {
+    assertFalse("Test not implemented", true);
+  }
+
+  public void testListFetchStartingEmpty() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    DatabaseAdapter.getListsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getListsTable().fetchStarting(null);
+    assertFalse("Vad skall egentligen fetchStarting returnera?", true);
+    assertTrue("Cursor is empty", result.moveToFirst());
+    // Upon creation, blank category is added.
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    result.close();
+  }
+
+  public void testListIsDeleted() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long id = DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    id = DatabaseAdapter.getListsTable().create(args);
+    DatabaseAdapter.getListsTable().delete(2);
+    assertTrue("Item is not deleted.", DatabaseAdapter.getListsTable().isDeleted(2));
+    assertFalse("Item is deleted.", DatabaseAdapter.getListsTable().isDeleted(1));
+  }
+
+  public void testListUpdate() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    assertTrue(DatabaseAdapter.getListsTable().update(1, args));
+
+    Cursor result =
+        mDbAdapter.getDB().query(DatabaseAdapter.getListsTable().getTableName(), null, null,
+            null,
+            null, null, null, null);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 4, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "20110127", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
+    assertEquals("Name of column 3 is wrong.", "timestamp", result.getColumnName(3));
+    result.close();
+  }
+
+  public void testItemsCreate() {
     ContentValues args = new ContentValues();
     args.put(Key.NAME, "Pryl");
     args.put(Key.UNIT, 1);
@@ -812,67 +1229,492 @@ public class DatabaseTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
-    assertEquals("Value of items column 0 is wrong.", 1, result.getLong(0));
-    assertEquals("Name of items column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of items column 1 is wrong.", 1, result.getLong(1));
-    assertEquals("Name of items column 1 is wrong.", "unitid", result.getColumnName(1));
-    assertEquals("Value of items column 2 is wrong.", (float) 0.0, result.getFloat(2));
-    assertEquals("Name of items column 2 is wrong.", "amount", result.getColumnName(2));
-    assertEquals("Value of items column 3 is wrong.", 1, result.getLong(3));
-    assertEquals("Name of items column 3 is wrong.", "catid", result.getColumnName(3));
-    assertEquals("Value of items column 4 is wrong.", "Pryl", result.getString(4));
-    assertEquals("Name of items column 4 is wrong.", "name", result.getColumnName(4));
-    assertEquals("Value of items column 5 is wrong.", 0, result.getInt(5));
-    assertEquals("Name of items column 5 is wrong.", "status", result.getColumnName(5));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
     result.close();
   }
 
+  public void testItemsCreateMissingUnit() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.CATEGORY, 1);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with missing unit created.", isSuccess);
+  }
+
+  public void testItemsCreateMissingCategory() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with missing category created.", isSuccess);
+  }
+
+  public void testItemsCreateMissingName() {
+    boolean isSuccess = false;
+    ContentValues args = new ContentValues();
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    try {
+      DatabaseAdapter.getListsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("entry with missing name created", isSuccess);
+  }
+
+  public void testItemsCreateNullUnit() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, (Integer) null);
+    args.put(Key.CATEGORY, 1);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with null unit created.", isSuccess);
+  }
+
+  public void testItemsCreateNullCategory() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, (Integer) null);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with null category created.", isSuccess);
+  }
+
+  public void testItemsCreateNullName() {
+    boolean isSuccess = false;
+    ContentValues args = new ContentValues();
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    try {
+      DatabaseAdapter.getListsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("entry with null name created", isSuccess);
+  }
+
+  public void testItemsCreateDuplicate() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long result = DatabaseAdapter.getItemsTable().create(args);
+    assertEquals("entry with duplicated name created", -Status.ERROR, result);
+    Cursor cur = DatabaseAdapter.getItemsTable().fetch("Pryl");
+    assertTrue("Cursor is empty", cur.moveToFirst());
+    assertEquals("Wrong number of entries in cursor", 1, cur.getCount());
+    cur.close();
+  }
+
+  public void testItemsCreateDeleted() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    Cursor result =
+        mDbAdapter.getDB().query(DatabaseAdapter.getItemsTable().getTableName(), null, null,
+            null,
+            null, null, null, null);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    result.close();
+  }
+
+  public void testItemsCreateDeletedMissingUnit() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.CATEGORY, 1);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with missing unit created.", isSuccess);
+  }
+
+  public void testItemsCreateDeletedMissingCategory() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
+    args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with missing unit created.", isSuccess);
+  }
+
   public void testItemsDelete() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
+    Cursor result = DatabaseAdapter.getItemsTable().fetch();
+    assertFalse("Cursor not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testItemsDeleteNonExisting() {
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().delete(2);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Managed to delete non-existent entry.", isSuccess);
+  }
+
+  public void testItemsDeleteTicklist() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long itemid = DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long listid = DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.ITEM, itemid);
+    args.put(Key.LIST, listid);
+    DatabaseAdapter.getTicklistsTable().create(args);
+
+    assertFalse("Entry was deleted.", DatabaseAdapter.getItemsTable().delete(1));
   }
 
   public void testItemsUndelete() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
+    DatabaseAdapter.getItemsTable().undelete(1);
+    Cursor result = DatabaseAdapter.getItemsTable().fetch(1);
+    assertTrue("Cursor empty", result.moveToFirst());
+    result.close();
   }
 
   public void testItemsFetch() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    Cursor result = DatabaseAdapter.getItemsTable().fetch();
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    result.close();
   }
 
   public void testItemsFetchOnName() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    Cursor result = DatabaseAdapter.getItemsTable().fetch("Pryl");
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 1, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    result.close();
   }
 
   public void testItemsFetchOnId() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    Cursor result = DatabaseAdapter.getItemsTable().fetch(1);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    result.close();
   }
 
   public void testItemsFetchAll() {
-    assertFalse("Test not implemented.", true);
-  }
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
 
-  public void testItemsFetchDeleted() {
-    assertFalse("Test not implemented.", true);
-  }
+    Cursor result = DatabaseAdapter.getItemsTable().fetchAll(1);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 512, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    result.close();
 
-  public void testItemsFetchDeletedOnName() {
-    assertFalse("Test not implemented.", true);
-  }
-
-  public void testItemsFetchDeletedOnId() {
-    assertFalse("Test not implemented.", true);
+    result = DatabaseAdapter.getItemsTable().fetchAll(2);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Sak", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    result.close();
   }
 
   public void testItemsFetchStarting() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getItemsTable().fetchStarting("P");
+    assertTrue("Cursor is empty", result.moveToFirst());
+    // Upon creation, blank unit is added.
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Pryl", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    result.close();
+    result = DatabaseAdapter.getItemsTable().fetchStarting("X");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testItemsFetchStartingLower() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting("p");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testItemsFetchStartingUpper() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getUnitsTable().fetchStarting("P");
+    assertFalse("Cursor is not empty", result.moveToFirst());
+    result.close();
+  }
+
+  public void testItemsFetchStartingEmpty() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+
+    Cursor result = DatabaseAdapter.getItemsTable().fetchStarting(null);
+    assertTrue("Cursor is empty", result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
+    assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", "pryl", result.getString(1));
+    assertTrue("Failed to advance cursor.", result.moveToNext());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", "sak", result.getString(1));
+    result.close();
   }
 
   public void testItemsIsDeleted() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Sak");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    DatabaseAdapter.getItemsTable().delete(1);
+
+    assertTrue("Entry is not deleted.", DatabaseAdapter.getItemsTable().isDeleted(1));
+    assertFalse("Entry is deleted.", DatabaseAdapter.getItemsTable().isDeleted(2));
   }
 
   public void testItemsUpdate() {
-    assertFalse("Test not implemented.", true);
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Pryl");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Sak");
+    DatabaseAdapter.getItemsTable().update(1, args);
+    Cursor result =
+        mDbAdapter.getDB().query(DatabaseAdapter.getItemsTable().getTableName(), null, null, null,
+            null, null, null, null);
+
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
+    assertEquals("Value of column 4 is wrong.", "Sak", result.getString(4));
+    assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+    assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    result.close();
   }
 
   public void testTickListCreate() {
@@ -918,6 +1760,16 @@ public class DatabaseTests extends AndroidTestCase {
 
   public void testTicklistDelete() {
     assertFalse("Test not implemented.", true);
+  }
+
+  public void testTicklistDeleteNonExisting() {
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getTicklistsTable().delete(2);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Managed to delete non-existent entry.", isSuccess);
   }
 
   public void testTicklistUndelete() {
