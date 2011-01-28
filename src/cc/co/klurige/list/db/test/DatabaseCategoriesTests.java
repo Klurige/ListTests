@@ -33,9 +33,18 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
 
   private void setupDatabase() {
     ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Chark");
+    DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Mejeri");
+    DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Bröd");
+    DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
     args.put(Key.NAME, "Pryl");
     args.put(Key.UNIT, 1);
-    args.put(Key.CATEGORY, 1);
+    args.put(Key.CATEGORY, 2);
     long itemid = DatabaseAdapter.getItemsTable().create(args);
     args = new ContentValues();
     args.put(Key.NAME, "matlista");
@@ -43,6 +52,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     args = new ContentValues();
     args.put(Key.LIST, listid);
     args.put(Key.ITEM, itemid);
+    args.put(Key.CATEGORY, 3);
     DatabaseAdapter.getTicklistsTable().create(args);
     args = new ContentValues();
     args.put(Key.NAME, "Sak");
