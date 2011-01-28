@@ -71,7 +71,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
 
   public void testCategoryCreate() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
+    args.put(Key.NAME, "Annat");
     DatabaseAdapter.getCategoriesTable().create(args);
     Cursor result =
         mDbAdapter.getDB().query(DatabaseAdapter.getCategoriesTable().getTableName(), null, null,
@@ -83,7 +83,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
     assertEquals("Value of category column 0 is wrong.", 2, result.getLong(0));
     assertEquals("Name of category column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of category column 1 is wrong.", "Chark", result.getString(1));
+    assertEquals("Value of category column 1 is wrong.", "Annat", result.getString(1));
     assertEquals("Name of category column 1 is wrong.", "name", result.getColumnName(1));
     assertEquals("Value of category column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of category column 2 is wrong.", "status", result.getColumnName(2));
@@ -114,10 +114,8 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryCreateDuplicate() {
+    setupDatabase();
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
     args.put(Key.NAME, "Chark");
     long id = DatabaseAdapter.getCategoriesTable().create(args);
     assertEquals("entry with duplicated name created", -Status.ERROR, id);
@@ -128,12 +126,10 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryCreateDeleted() {
+    setupDatabase();
+    DatabaseAdapter.getCategoriesTable().delete(4);
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    DatabaseAdapter.getCategoriesTable().delete(2);
-    args = new ContentValues();
-    args.put(Key.NAME, "Chark");
+    args.put(Key.NAME, "Bröd");
     DatabaseAdapter.getCategoriesTable().create(args);
     Cursor result =
         mDbAdapter.getDB().query(DatabaseAdapter.getCategoriesTable().getTableName(), null, null,
@@ -142,7 +138,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank category is added.
     assertTrue("Newly created item should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of entries is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 4, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
     assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
@@ -154,12 +150,9 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryDelete() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-
-    assertTrue(DatabaseAdapter.getCategoriesTable().delete(2));
-    Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
+    setupDatabase();
+    assertTrue(DatabaseAdapter.getCategoriesTable().delete(4));
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetch(4);
     assertFalse("Cursor is not empty.", result.moveToFirst());
     result.close();
   }
@@ -174,77 +167,52 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertTrue("Managed to delete non-existent entry.", isSuccess);
   }
 
-  public void testCategoryDeleteFailedItem() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Skinka");
-    args.put(Key.UNIT, 1);
-    args.put(Key.CATEGORY, 2);
-    DatabaseAdapter.getItemsTable().create(args);
-
-    assertFalse(DatabaseAdapter.getCategoriesTable().delete(2));
+  public void testCategoryDeleteFailedOnItem() {
+    setupDatabase();
+    assertFalse("Should not have succeeded.", DatabaseAdapter.getCategoriesTable().delete(2));
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
     assertTrue("Cursor is empty.", result.moveToFirst());
     result.close();
   }
 
   public void testCategoryDeleteFailedTicklistItem() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Skinka");
-    args.put(Key.UNIT, 1);
-    args.put(Key.CATEGORY, 1);
-    long itemid = DatabaseAdapter.getItemsTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "matlista");
-    long listid = DatabaseAdapter.getListsTable().create(args);
-
-    args = new ContentValues();
-    args.put(Key.LIST, listid);
-    args.put(Key.ITEM, itemid);
-    args.put(Key.CATEGORY, 2);
-    DatabaseAdapter.getTicklistsTable().create(args);
-
-    assertFalse(DatabaseAdapter.getCategoriesTable().delete(2));
-    Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
+    setupDatabase();
+    assertFalse(DatabaseAdapter.getCategoriesTable().delete(3));
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetch(3);
     assertTrue("Cursor is empty.", result.moveToFirst());
     result.close();
   }
 
   public void testCategoryUndelete() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    DatabaseAdapter.getCategoriesTable().delete(2);
+    setupDatabase();
+    DatabaseAdapter.getCategoriesTable().delete(4);
 
-    assertTrue(DatabaseAdapter.getCategoriesTable().undelete(2));
-    Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
+    assertTrue(DatabaseAdapter.getCategoriesTable().undelete(4));
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetch(4);
     assertTrue("Cursor is empty.", result.moveToFirst());
-    assertEquals("Name of undeleted item is wrong.", "Chark", result.getString(1));
+    assertEquals("Name of undeleted item is wrong.", "Bröd", result.getString(1));
     result.close();
   }
 
   public void testCategoryFetch() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Mejeri");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    assertTrue(DatabaseAdapter.getCategoriesTable().delete(2));
-
+    setupDatabase();
+    assertTrue(DatabaseAdapter.getCategoriesTable().delete(4));
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch();
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
-    assertEquals("Number of entries is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 3, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
     assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of column 1 is wrong.", "", result.getString(1));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
+
+    assertTrue("Cursor cannot advance.", result.moveToNext());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Value of column 1 is wrong.", "Chark", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
@@ -260,9 +228,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchOnName() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
+    setupDatabase();
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch("Chark");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
@@ -274,9 +240,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchOnNameBlank() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
+    setupDatabase();
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch("");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
@@ -288,10 +252,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchEmpty() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-
+    setupDatabase();
     boolean isSuccess = false;
     try {
       Cursor result = DatabaseAdapter.getCategoriesTable().fetch(null);
@@ -303,9 +264,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchOnId() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
+    setupDatabase();
     Cursor result = DatabaseAdapter.getCategoriesTable().fetch(2);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
@@ -321,22 +280,17 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchAll() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Mejeri");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    assertTrue(DatabaseAdapter.getCategoriesTable().delete(2));
+    setupDatabase();
+    assertTrue(DatabaseAdapter.getCategoriesTable().delete(4));
 
-    Cursor result = DatabaseAdapter.getCategoriesTable().fetchAll(2);
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetchAll(4);
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
     assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
-    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Value of column 0 is wrong.", 4, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of column 1 is wrong.", "Chark", result.getString(1));
+    assertEquals("Value of column 1 is wrong.", "Bröd", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
     assertEquals("Value of column 2 is wrong.", 512, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
@@ -354,17 +308,10 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
-
   }
 
   public void testCategoryFetchStarting() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Mejeri");
-    DatabaseAdapter.getCategoriesTable().create(args);
-
+    setupDatabase();
     Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("C");
     assertTrue("Cursor is empty", result.moveToFirst());
     // Upon creation, blank category is added.
@@ -381,8 +328,9 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchStartingLower() {
+    setupDatabase();
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
+    args.put(Key.NAME, "Annat");
     DatabaseAdapter.getCategoriesTable().create(args);
 
     Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("c");
@@ -391,26 +339,21 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryFetchStartingUpper() {
+    setupDatabase();
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "chark");
+    args.put(Key.NAME, "annat");
     DatabaseAdapter.getCategoriesTable().create(args);
 
-    Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("C");
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting("a");
     assertTrue("Cursor is empty", result.moveToFirst());
     result.close();
   }
 
   public void testCategoryFetchStartingEmpty() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Mejeri");
-    DatabaseAdapter.getCategoriesTable().create(args);
-
+    setupDatabase();
     Cursor result = DatabaseAdapter.getCategoriesTable().fetchStarting(null);
     assertTrue("Cursor is empty", result.moveToFirst());
-    assertEquals("Number of entries is wrong.", 3, result.getCount());
+    assertEquals("Number of entries is wrong.", 4, result.getCount());
     assertEquals("Number of columns is wrong.", 2, result.getColumnCount());
     assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
@@ -420,22 +363,19 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
   }
 
   public void testCategoryIsDeleted() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
-    args.put(Key.NAME, "Mejeri");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    DatabaseAdapter.getCategoriesTable().delete(2);
-    assertTrue("Item is not deleted.", DatabaseAdapter.getCategoriesTable().isDeleted(2));
+    setupDatabase();
+    DatabaseAdapter.getCategoriesTable().delete(4);
+    assertTrue("Item is not deleted.", DatabaseAdapter.getCategoriesTable().isDeleted(4));
     assertFalse("Item is deleted.", DatabaseAdapter.getCategoriesTable().isDeleted(3));
   }
 
+  public void testCategoryIsDeletedNonExisting() {
+    assertFalse("Item is deleted.", DatabaseAdapter.getCategoriesTable().isDeleted(4));
+  }
+
   public void testCategoryUpdate() {
+    setupDatabase();
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Chark");
-    DatabaseAdapter.getCategoriesTable().create(args);
-    args = new ContentValues();
     args.put(Key.NAME, "chark");
     assertTrue(DatabaseAdapter.getCategoriesTable().update(2, args));
 
@@ -446,7 +386,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     // Upon creation, blank category is added.
     assertTrue("Newly created unit should be at 1.", result.moveToPosition(1));
-    assertEquals("Number of entries is wrong.", 2, result.getCount());
+    assertEquals("Number of entries is wrong.", 4, result.getCount());
     assertEquals("Number of columns is wrong.", 3, result.getColumnCount());
     assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
@@ -455,5 +395,26 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
+  }
+
+  public void testCategoryUpdateFailOnStatus() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "chark");
+    args.put(Key.STATUS, Status.ERROR);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getCategoriesTable().update(2, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update status.", isSuccess);
+  }
+
+  public void testCategoryUpdateFailOnId() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "chark");
+    assertFalse("Should no succeed.", DatabaseAdapter.getCategoriesTable().update(5, args));
   }
 }
