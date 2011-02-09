@@ -3,6 +3,8 @@ package cc.co.klurige.list.database;
 import java.sql.SQLException;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import cc.co.klurige.list.database.DatabaseAdapter;
@@ -52,6 +54,11 @@ public class DatabaseCreationTests extends AndroidTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     assertTrue("Database was not properly closed.", (mDbAdapter.getDB() == null));
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   public void testPreConditions() {
@@ -90,4 +97,45 @@ public class DatabaseCreationTests extends AndroidTestCase {
     assertTrue("Couldn't upgrade the database from  version 2.", isSucceeded);
   }
 
+  private class DatabaseHelperIllegalVersion extends SQLiteOpenHelper {
+    DatabaseHelperIllegalVersion(final Context context) {
+      super(context, "ticklist_db", null, Integer.MAX_VALUE);
+    }
+
+    @Override
+    public void onCreate(final SQLiteDatabase db) {}
+
+    @Override
+    public void onUpgrade(final SQLiteDatabase db, final int oldVersion,
+        final int newVersion) {}
+  }
+
+  public void testUpgradeToIllegal() {
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    mDbAdapter.open();
+    mDbAdapter.close();
+
+    SQLiteOpenHelper mDbHelper = new DatabaseHelperIllegalVersion(mCtx);
+    mDbHelper.getWritableDatabase();
+    mDbHelper.close();
+
+    boolean isSuccess = false;
+    try {
+      mDbAdapter.open();
+    } catch (IllegalStateException e) {
+      isSuccess = true;
+    }
+    mDbAdapter.close();
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      assertTrue("Could not delete database.", true);
+      e.printStackTrace();
+    }
+    assertTrue("Upgrade should have failed.", isSuccess);
+  }
 }
