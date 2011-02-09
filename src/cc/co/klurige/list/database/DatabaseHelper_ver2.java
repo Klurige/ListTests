@@ -1,4 +1,4 @@
-package cc.co.klurige.list.db.test;
+package cc.co.klurige.list.database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -17,11 +17,11 @@ import cc.co.klurige.list.database.Units;
  * @author roni
  *         Wrapper helper class for database creation.
  */
-final class DatabaseHelper_ver1 extends SQLiteOpenHelper {
+final class DatabaseHelper_ver2 extends SQLiteOpenHelper {
   /**
    * Log Tag.
    */
-  private static final String TAG              = DatabaseHelper_ver1.class.getName();
+  private static final String TAG              = DatabaseHelper_ver2.class.getName();
 
   /**
    * Database name. Same as file name.
@@ -32,7 +32,7 @@ final class DatabaseHelper_ver1 extends SQLiteOpenHelper {
    * Database version.
    * Remember to update onUpgrade() whenever this is incremented.
    */
-  private static final int    DATABASE_VERSION = 1;
+  private static final int    DATABASE_VERSION = 2;
 
   /**
    * Constructor for helper.
@@ -40,7 +40,7 @@ final class DatabaseHelper_ver1 extends SQLiteOpenHelper {
    * 
    * @param context same as super.
    */
-  DatabaseHelper_ver1(final Context context) {
+  DatabaseHelper_ver2(final Context context) {
     super(context, DATABASE_NAME, null, DATABASE_VERSION);
   }
 

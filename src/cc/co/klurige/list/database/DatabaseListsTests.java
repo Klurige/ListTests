@@ -1,4 +1,4 @@
-package cc.co.klurige.list.db.test;
+package cc.co.klurige.list.database;
 
 import java.util.Date;
 
