@@ -154,6 +154,34 @@ public class DatabaseItemsTests extends AndroidTestCase {
     assertTrue("Entry with null category created.", isSuccess);
   }
 
+  public void testItemsCreateNonExistingUnit() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Mojäng");
+    args.put(Key.UNIT, 7);
+    args.put(Key.CATEGORY, 1);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with non-existing unit created.", isSuccess);
+  }
+
+  public void testItemsCreateNonExistingCategory() {
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Mojäng");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 7);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().create(args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Entry with null category created.", isSuccess);
+  }
+
   public void testItemsCreateNullName() {
     boolean isSuccess = false;
     ContentValues args = new ContentValues();
