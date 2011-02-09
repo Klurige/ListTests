@@ -61,7 +61,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
 
   public void testItemsCreate() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
+    args.put(Key.NAME, "Mojäng");
     args.put(Key.UNIT, 1);
     args.put(Key.CATEGORY, 1);
     DatabaseAdapter.getItemsTable().create(args);
@@ -80,7 +80,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
     assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
     assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
     assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
-    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Value of column 4 is wrong.", "Mojäng", result.getString(4));
     assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
     assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
     assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
@@ -89,7 +89,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
 
   public void testItemsCreateMissingUnit() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
+    args.put(Key.NAME, "Mojäng");
     args.put(Key.CATEGORY, 1);
     boolean isSuccess = false;
     try {
@@ -102,7 +102,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
 
   public void testItemsCreateMissingCategory() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
+    args.put(Key.NAME, "Mojäng");
     args.put(Key.UNIT, 1);
     boolean isSuccess = false;
     try {
@@ -128,7 +128,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
 
   public void testItemsCreateNullUnit() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
+    args.put(Key.NAME, "Mojäng");
     args.put(Key.UNIT, (Integer) null);
     args.put(Key.CATEGORY, 1);
     boolean isSuccess = false;
@@ -142,7 +142,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
 
   public void testItemsCreateNullCategory() {
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
+    args.put(Key.NAME, "Mojäng");
     args.put(Key.UNIT, 1);
     args.put(Key.CATEGORY, (Integer) null);
     boolean isSuccess = false;
@@ -168,12 +168,8 @@ public class DatabaseItemsTests extends AndroidTestCase {
   }
 
   public void testItemsCreateDuplicate() {
+    setupDatabase();
     ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
-    args.put(Key.UNIT, 1);
-    args.put(Key.CATEGORY, 1);
-    DatabaseAdapter.getItemsTable().create(args);
-    args = new ContentValues();
     args.put(Key.NAME, "Pryl");
     args.put(Key.UNIT, 1);
     args.put(Key.CATEGORY, 1);
@@ -186,13 +182,9 @@ public class DatabaseItemsTests extends AndroidTestCase {
   }
 
   public void testItemsCreateDeleted() {
-    ContentValues args = new ContentValues();
-    args.put(Key.NAME, "Pryl");
-    args.put(Key.UNIT, 1);
-    args.put(Key.CATEGORY, 1);
-    DatabaseAdapter.getItemsTable().create(args);
+    setupDatabase();
     DatabaseAdapter.getItemsTable().delete(1);
-    args = new ContentValues();
+    ContentValues args = new ContentValues();
     args.put(Key.NAME, "Pryl");
     args.put(Key.UNIT, 1);
     args.put(Key.CATEGORY, 1);
@@ -202,20 +194,28 @@ public class DatabaseItemsTests extends AndroidTestCase {
             null,
             null, null, null, null);
     assertTrue(result.moveToFirst());
-    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
     assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
-    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
     assertEquals("Name of column 1 is wrong.", "unitid", result.getColumnName(1));
-    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
     assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
-    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
     assertEquals("Name of column 3 is wrong.", "catid", result.getColumnName(3));
-    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
     assertEquals("Name of column 4 is wrong.", "name", result.getColumnName(4));
-    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
     assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Value of column 4 is wrong.", "Pryl", result.getString(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
+
+    assertTrue("Could not advance the cursor.", result.moveToNext());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Value of column 3 is wrong.", 1, result.getLong(3));
+    assertEquals("Value of column 4 is wrong.", "Sak", result.getString(4));
+    assertEquals("Value of column 5 is wrong.", 0, result.getInt(5));
     result.close();
   }
 
