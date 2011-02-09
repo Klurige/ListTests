@@ -220,22 +220,68 @@ public class DatabaseTicklistsTests extends AndroidTestCase {
     assertTrue(result.moveToFirst());
     assertEquals("Number of entries is wrong.", 1, result.getCount());
     assertEquals("Number of columns is wrong.", 8, result.getColumnCount());
-    assertEquals("Name of items column 0 is wrong.", "_id", result.getColumnName(0));
-    assertEquals("Name of items column 1 is wrong.", "itemid", result.getColumnName(1));
-    assertEquals("Name of items column 2 is wrong.", "listid", result.getColumnName(2));
-    assertEquals("Name of items column 3 is wrong.", "amount", result.getColumnName(3));
-    assertEquals("Name of items column 4 is wrong.", "unitid", result.getColumnName(4));
-    assertEquals("Name of items column 5 is wrong.", "catid", result.getColumnName(5));
-    assertEquals("Name of items column 6 is wrong.", "picked", result.getColumnName(6));
-    assertEquals("Name of items column 7 is wrong.", "status", result.getColumnName(7));
-    assertEquals("Value of items column 0 is wrong.", 1, result.getLong(0));
-    assertEquals("Value of items column 1 is wrong.", 1, result.getLong(1));
-    assertEquals("Value of items column 2 is wrong.", 1, result.getLong(2));
-    assertEquals("Value of items column 3 is wrong.", (float) 0.0, result.getFloat(3));
-    assertEquals("Value of items column 4 is wrong.", 1, result.getLong(4));
-    assertEquals("Value of items column 5 is wrong.", 1, result.getLong(5));
-    assertEquals("Value of items column 6 is wrong.", 0, result.getLong(6));
-    assertEquals("Value of items column 7 is wrong.", 0, result.getInt(7));
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Name of column 1 is wrong.", "itemid", result.getColumnName(1));
+    assertEquals("Name of column 2 is wrong.", "listid", result.getColumnName(2));
+    assertEquals("Name of column 3 is wrong.", "amount", result.getColumnName(3));
+    assertEquals("Name of column 4 is wrong.", "unitid", result.getColumnName(4));
+    assertEquals("Name of column 5 is wrong.", "catid", result.getColumnName(5));
+    assertEquals("Name of column 6 is wrong.", "picked", result.getColumnName(6));
+    assertEquals("Name of column 7 is wrong.", "status", result.getColumnName(7));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", 1, result.getLong(1));
+    assertEquals("Value of column 2 is wrong.", 1, result.getLong(2));
+    assertEquals("Value of column 3 is wrong.", (float) 0.0, result.getFloat(3));
+    assertEquals("Value of column 4 is wrong.", 1, result.getLong(4));
+    assertEquals("Value of column 5 is wrong.", 1, result.getLong(5));
+    assertEquals("Value of column 6 is wrong.", 0, result.getLong(6));
+    assertEquals("Value of column 7 is wrong.", 0, result.getInt(7));
+    result.close();
+  }
+
+  public void testTicklistFetchAsStrings() {
+    setupDatabase();
+    Cursor result = DatabaseAdapter.getTicklistsTable().fetchAsStrings(1);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 1, result.getCount());
+    assertEquals("Number of columns is wrong.", 5, result.getColumnCount());
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Name of column 3 is wrong.", "units_name", result.getColumnName(3));
+    assertEquals("Name of column 4 is wrong.", "categories_name", result.getColumnName(4));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", "Pryl", result.getString(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Value of column 3 is wrong.", "", result.getString(3));
+    assertEquals("Value of column 4 is wrong.", "", result.getString(4));
+    result.close();
+  }
+
+  public void testTicklistFetchItemsAsStrings() {
+    setupDatabase();
+    Cursor result = DatabaseAdapter.getTicklistsTable().fetchItemsAsStrings(1);
+    assertTrue(result.moveToFirst());
+    assertEquals("Number of entries is wrong.", 2, result.getCount());
+    assertEquals("Number of columns is wrong.", 6, result.getColumnCount());
+    assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
+    assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
+    assertEquals("Name of column 2 is wrong.", "amount", result.getColumnName(2));
+    assertEquals("Name of column 3 is wrong.", "units_name", result.getColumnName(3));
+    assertEquals("Name of column 4 is wrong.", "categories_name", result.getColumnName(4));
+    assertEquals("Name of column 5 is wrong.", "ticklist_picked", result.getColumnName(5));
+    assertEquals("Value of column 0 is wrong.", 1, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", "Pryl", result.getString(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Value of column 3 is wrong.", "", result.getString(3));
+    assertEquals("Value of column 4 is wrong.", "", result.getString(4));
+    assertTrue("Could not advance cursor", result.moveToNext());
+    assertEquals("Value of column 0 is wrong.", 2, result.getLong(0));
+    assertEquals("Value of column 1 is wrong.", "Sak", result.getString(1));
+    assertEquals("Value of column 2 is wrong.", (float) 0.0, result.getFloat(2));
+    assertEquals("Value of column 3 is wrong.", "", result.getString(3));
+    assertEquals("Value of column 4 is wrong.", "", result.getString(4));
+    assertEquals("Value of column 4 is wrong.", 0, result.getLong(5));
     result.close();
   }
 
