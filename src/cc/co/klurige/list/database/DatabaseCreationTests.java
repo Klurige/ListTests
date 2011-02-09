@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
-import cc.co.klurige.list.database.DatabaseAdapter;
 
 public class DatabaseCreationTests extends AndroidTestCase {
 
@@ -20,6 +19,11 @@ public class DatabaseCreationTests extends AndroidTestCase {
     mCtx = new IsolatedContext(null, this.getContext());
     setContext(mCtx);
     mDbAdapter = DatabaseAdapter.getDatabaseAdapter(mCtx);
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
   }
 
   public void testCreation() {

@@ -1,11 +1,12 @@
 package cc.co.klurige.list.database;
 
+import java.sql.SQLException;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
-import cc.co.klurige.list.database.DatabaseAdapter;
 import cc.co.klurige.list.database.Table.Key;
 
 public class DatabaseTicklistsTests extends AndroidTestCase {
@@ -20,6 +21,11 @@ public class DatabaseTicklistsTests extends AndroidTestCase {
     setContext(mCtx);
     mDbAdapter = DatabaseAdapter.getDatabaseAdapter(mCtx);
 
+    try {
+      mDbAdapter.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
     mDbAdapter.open();
   }
 
@@ -27,7 +33,6 @@ public class DatabaseTicklistsTests extends AndroidTestCase {
   protected void tearDown() throws Exception {
     super.tearDown();
     mDbAdapter.close();
-    mDbAdapter.delete();
   }
 
   private void setupDatabase() {
