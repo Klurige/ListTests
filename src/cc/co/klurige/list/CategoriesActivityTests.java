@@ -55,7 +55,7 @@ import cc.co.klurige.list.database.Table.Key;
 public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<CategoriesActivity> {
   CategoriesActivity mActivity;
   Instrumentation    mInstrumentation;
-  Context            mContext;
+  DatabaseAdapter    mDbAdapter;
 
   public CategoriesActivityTests() {
     super("cc.co.klurige.list", CategoriesActivity.class);
@@ -64,51 +64,86 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
   @Override
   protected void setUp() throws Exception {
     super.setUp();
-    mActivity = getActivity();
     mInstrumentation = getInstrumentation();
+    Context ctx = mInstrumentation.getTargetContext();
+    DatabaseAdapter dba = DatabaseAdapter.getDatabaseAdapter(ctx);
+    try {
+      dba.delete();
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    mActivity = getActivity();
   }
 
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    mInstrumentation = getInstrumentation();
+    Context ctx = mInstrumentation.getTargetContext();
+    DatabaseAdapter dba = DatabaseAdapter.getDatabaseAdapter(ctx);
+    dba.close();
+  }
+
+  public void testPreconditions() {
+    Context ctx = mActivity.getApplicationContext();
+    DatabaseAdapter dba = DatabaseAdapter.getDatabaseAdapter(ctx);
+    assertNotNull("DB is null", dba.getDB());
+    assertTrue("Database is not open", dba.getDB().isOpen());
+    Cursor result = DatabaseAdapter.getCategoriesTable().fetch();
+    assertTrue("Categories table is empty", result.moveToFirst());
+    assertEquals("Wrong number of entries", 1, result.getCount());
+    assertEquals("Wrong value for entry.", "", result.getString(result
+        .getColumnIndexOrThrow(Key.NAME)));
+    result.close();
   }
 
   public void testAdd() {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.categories_add);
     TouchUtils.clickView(this, addButton);
-    // mInstrumentation.waitForIdleSync();
+    final Dialog diag = mActivity.mDialog;
 
-    final Dialog d = mActivity.mDialog;
-
-    final View input = d.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
-    // mActivity.runOnUiThread(
-    // new Runnable() {
-    // @Override
-    // public void run() {
-    // input.requestFocus();
-    // }
-    // });
-    //
-    // mInstrumentation.waitForIdleSync();
+    final View input = diag.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
 
     TouchUtils.tapView(this, input);
     sendKeys(KeyEvent.KEYCODE_M, KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_E,
         KeyEvent.KEYCODE_R, KeyEvent.KEYCODE_I);
 
-    // Use dpad to navigate to and press ok button.
-    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_CENTER);
-    // final View okButton = d.findViewById(android.R.id.button1);
-    // TouchUtils.tapView(this, okButton);
+    final Button okButton = (Button) diag.findViewById(android.R.id.button1);
+    mActivity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        okButton.requestFocus();
+        okButton.performClick();
+      }
+    });
+    mInstrumentation.waitForIdleSync();
 
     ListView list = (ListView) mActivity.findViewById(cc.co.klurige.list.R.id.categories_list);
-    assertEquals("Number of elements in list is wrong", 1, list.getCount());
+    assertEquals("Number of entries in list is wrong", 2, list.getCount());
+
+    TextView t =
+        (TextView) list.getChildAt(0).findViewById(cc.co.klurige.list.R.id.categories_row_name);
+    assertEquals("First entry should be empty.", "(empty)", t.getText());
+    t = (TextView) list.getChildAt(1).findViewById(cc.co.klurige.list.R.id.categories_row_name);
+    assertEquals("Contents of entry is wrong.", "Mejeri", t.getText());
   }
 
-  // public void testMenuEdit() {
-  // assertFalse("Not implemented.", true);
-  // }
-  //
-  // public void testMenuRemove() {
-  // assertFalse("Not implemented.", true);
-  // }
+  /**
+   * Edit a category by long-clicking and selecting from the context menu.
+   */
+  public void testMenuEdit() {
+    assertFalse("Not implemented.", true);
+  }
+
+  /**
+   * Edit a category by short-clicking the entry in the list
+   */
+  public void testListEdit() {
+    assertFalse("Not implemented.", true);
+  }
+
+  public void testMenuRemove() {
+    assertFalse("Not implemented.", true);
+  }
+
 }
