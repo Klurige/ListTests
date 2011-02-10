@@ -1,22 +1,33 @@
 package cc.co.klurige.list;
 
+import java.sql.SQLException;
+
 import android.app.Dialog;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.database.Cursor;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.TouchUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
+import cc.co.klurige.list.database.DatabaseAdapter;
+import cc.co.klurige.list.database.Table.Key;
 
 /**
  * Tests to verify and validate the Categories Activity
  * 
  * @author roni
  * 
- *         The activity shows a list of categories. Nothing should happen on
- *         short-click, but long-click should show a context menu, where it
- *         should be possible to edit or remove category.
+ *         The activity shows a list of categories.
+ *         - Short-click on an entry in the list:
+ *         Bring up the edit dialogue.
+ *         - Long-click on an entry in the list:
+ *         Show a context menu, where it should be possible to
+ *         edit or remove an entry.
+ * 
  *         There is also an "Add"-button at the bottom of the screen. Pressing
  *         this will let the user add a new category.
  *         The activity is closed through the back-button.
