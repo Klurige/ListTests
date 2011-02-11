@@ -469,7 +469,8 @@ public class DatabaseListsTests extends AndroidTestCase {
     DatabaseAdapter.getListsTable().create(args);
     args = new ContentValues();
     args.put(Key.NAME, "20110127");
-    assertTrue(DatabaseAdapter.getListsTable().update(1, args));
+    assertEquals("Update should have succeeded.", 1, DatabaseAdapter.getListsTable()
+        .update(1, args));
 
     Cursor result =
         mDbAdapter.getDB().query(DatabaseAdapter.getListsTable().getTableName(), null, null,
@@ -486,5 +487,76 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     assertEquals("Name of column 3 is wrong.", "timestamp", result.getColumnName(3));
     result.close();
+  }
+
+  public void testListUpdateDuplicateName() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    long e2 = DatabaseAdapter.getListsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_NAME, DatabaseAdapter
+        .getListsTable().update(e2, args));
+  }
+
+  public void testListUpdateToDeleted() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long e1 = DatabaseAdapter.getListsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    long e2 = DatabaseAdapter.getListsTable().create(args);
+
+    DatabaseAdapter.getListsTable().delete(e1);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_DELETED_NAME, DatabaseAdapter
+        .getListsTable().update(e2, args));
+  }
+
+  public void testListUpdateFailOnStatus() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    long e1 = DatabaseAdapter.getListsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    args.put(Key.STATUS, Status.ERROR);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getListsTable().update(e1, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update status.", isSuccess);
+  }
+
+  public void testListUpdateFailOnId() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "20110126");
+    DatabaseAdapter.getListsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "20110127");
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getListsTable().update(5, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update this id.", isSuccess);
   }
 }

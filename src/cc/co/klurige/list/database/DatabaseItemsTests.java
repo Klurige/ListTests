@@ -587,4 +587,87 @@ public class DatabaseItemsTests extends AndroidTestCase {
     assertEquals("Name of column 5 is wrong.", "status", result.getColumnName(5));
     result.close();
   }
+
+  public void testItemUpdateDuplicateName() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Kort");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Papper");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long e2 = DatabaseAdapter.getItemsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Kort");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_NAME, DatabaseAdapter
+        .getItemsTable().update(e2, args));
+  }
+
+  public void testItemUpdateToDeleted() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Kort");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long e1 = DatabaseAdapter.getItemsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Papper");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long e2 = DatabaseAdapter.getItemsTable().create(args);
+
+    DatabaseAdapter.getItemsTable().delete(e1);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Kort");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_DELETED_NAME, DatabaseAdapter
+        .getItemsTable().update(e2, args));
+  }
+
+  public void testItemUpdateFailOnStatus() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Kort");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    long e1 = DatabaseAdapter.getItemsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "kort");
+    args.put(Key.STATUS, Status.ERROR);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().update(e1, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update status.", isSuccess);
+  }
+
+  public void testItemUpdateFailOnId() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "kort");
+    args.put(Key.UNIT, 1);
+    args.put(Key.CATEGORY, 1);
+    DatabaseAdapter.getItemsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Kort");
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getItemsTable().update(5, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update this id.", isSuccess);
+  }
 }

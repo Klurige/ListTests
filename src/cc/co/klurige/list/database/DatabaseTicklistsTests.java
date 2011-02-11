@@ -1,6 +1,7 @@
 package cc.co.klurige.list.database;
 
 import java.sql.SQLException;
+import java.util.Date;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.database.Cursor;
 import android.test.AndroidTestCase;
 import android.test.IsolatedContext;
 import cc.co.klurige.list.database.Table.Key;
+import cc.co.klurige.list.database.Table.Status;
 
 public class DatabaseTicklistsTests extends AndroidTestCase {
 
@@ -362,7 +364,8 @@ public class DatabaseTicklistsTests extends AndroidTestCase {
     setupDatabase();
     ContentValues args = new ContentValues();
     args.put(Key.AMOUNT, 2.0);
-    assertTrue("Entry could not be updated.", DatabaseAdapter.getTicklistsTable().update(1, args));
+    assertEquals("Entry could not be updated.", 1, DatabaseAdapter.getTicklistsTable().update(1,
+        args));
     Cursor result = DatabaseAdapter.getTicklistsTable().fetch(1);
     assertTrue(result.moveToFirst());
     assertEquals("Number of entries is wrong.", 1, result.getCount());
@@ -384,5 +387,60 @@ public class DatabaseTicklistsTests extends AndroidTestCase {
     assertEquals("Value of column 6 is wrong.", 0, result.getLong(6));
     assertEquals("Value of column 7 is wrong.", 0, result.getInt(7));
     result.close();
+  }
+
+  public void testTicklistUpdateFailOnStatus() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.AMOUNT, 2.0);
+    args.put(Key.STATUS, Status.ERROR);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getTicklistsTable().update(1, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update status.", isSuccess);
+  }
+
+  public void testUnitUpdateFailOnId() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.AMOUNT, 2.0);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getTicklistsTable().update(5, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update this id.", isSuccess);
+  }
+
+  public void testTicklistUpdateFailOnPicked() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.AMOUNT, 2.0);
+    Date timestamp = new Date();
+    args.put(Key.PICKED, timestamp.getTime());
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getTicklistsTable().update(1, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update PICKED.", isSuccess);
+  }
+
+  public void testTicklistUpdateFailOnName() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Test");
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getTicklistsTable().update(1, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to contain NAME.", isSuccess);
   }
 }

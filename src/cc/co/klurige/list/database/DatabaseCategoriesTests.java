@@ -382,7 +382,7 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     setupDatabase();
     ContentValues args = new ContentValues();
     args.put(Key.NAME, "chark");
-    assertTrue(DatabaseAdapter.getCategoriesTable().update(2, args));
+    assertEquals("Failed to update.", 2, DatabaseAdapter.getCategoriesTable().update(2, args));
 
     Cursor result =
         mDbAdapter.getDB().query(DatabaseAdapter.getCategoriesTable().getTableName(), null, null,
@@ -400,6 +400,42 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
+  }
+
+  public void testCategoryUpdateDuplicateName() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Tidningar");
+    DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Godis");
+    long e2 = DatabaseAdapter.getCategoriesTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Tidningar");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_NAME, DatabaseAdapter
+        .getCategoriesTable().update(e2, args));
+  }
+
+  public void testCategoryUpdateToDeleted() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "Tidningar");
+    long e1 = DatabaseAdapter.getCategoriesTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "Godis");
+    long e2 = DatabaseAdapter.getCategoriesTable().create(args);
+
+    DatabaseAdapter.getCategoriesTable().delete(e1);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Tidningar");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_DELETED_NAME, DatabaseAdapter
+        .getCategoriesTable().update(e2, args));
   }
 
   public void testCategoryUpdateFailOnStatus() {
@@ -420,6 +456,12 @@ public class DatabaseCategoriesTests extends AndroidTestCase {
     setupDatabase();
     ContentValues args = new ContentValues();
     args.put(Key.NAME, "chark");
-    assertFalse("Should no succeed.", DatabaseAdapter.getCategoriesTable().update(5, args));
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getCategoriesTable().update(5, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update this id.", isSuccess);
   }
 }

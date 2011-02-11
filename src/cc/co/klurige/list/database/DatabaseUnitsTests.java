@@ -438,7 +438,7 @@ public class DatabaseUnitsTests extends AndroidTestCase {
     DatabaseAdapter.getUnitsTable().create(args);
     args = new ContentValues();
     args.put(Key.NAME, "Kg");
-    assertTrue(DatabaseAdapter.getUnitsTable().update(2, args));
+    assertEquals("Failed to update.", 2, DatabaseAdapter.getUnitsTable().update(2, args));
 
     Cursor result =
         mDbAdapter.getDB().query(DatabaseAdapter.getUnitsTable().getTableName(), null, null, null,
@@ -455,5 +455,76 @@ public class DatabaseUnitsTests extends AndroidTestCase {
     assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
+  }
+
+  public void testUnitUpdateDuplicateName() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "meter");
+    DatabaseAdapter.getUnitsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "kvadratmeter");
+    long e2 = DatabaseAdapter.getUnitsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "meter");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_NAME, DatabaseAdapter
+        .getUnitsTable().update(e2, args));
+  }
+
+  public void testUnitUpdateToDeleted() {
+    setupDatabase();
+
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "meter");
+    long e1 = DatabaseAdapter.getUnitsTable().create(args);
+    args = new ContentValues();
+    args.put(Key.NAME, "kvadratmeter");
+    long e2 = DatabaseAdapter.getUnitsTable().create(args);
+
+    DatabaseAdapter.getUnitsTable().delete(e1);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "meter");
+
+    assertEquals("Update did not behave.", Table.Error.DUPLICATE_DELETED_NAME, DatabaseAdapter
+        .getUnitsTable().update(e2, args));
+  }
+
+  public void testUnitUpdateFailOnStatus() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "meter");
+    long e1 = DatabaseAdapter.getUnitsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Meter");
+    args.put(Key.STATUS, Status.ERROR);
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getUnitsTable().update(e1, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update status.", isSuccess);
+  }
+
+  public void testUnitUpdateFailOnId() {
+    setupDatabase();
+    ContentValues args = new ContentValues();
+    args.put(Key.NAME, "meter");
+    DatabaseAdapter.getUnitsTable().create(args);
+
+    args = new ContentValues();
+    args.put(Key.NAME, "Meter");
+    boolean isSuccess = false;
+    try {
+      DatabaseAdapter.getUnitsTable().update(5, args);
+    } catch (IllegalArgumentException e) {
+      isSuccess = true;
+    }
+    assertTrue("Shouldn't be allowed to update this id.", isSuccess);
   }
 }
