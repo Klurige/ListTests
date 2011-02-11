@@ -207,7 +207,7 @@ public class DatabaseItemsTests extends AndroidTestCase {
     args.put(Key.UNIT, 1);
     args.put(Key.CATEGORY, 1);
     long id = DatabaseAdapter.getItemsTable().create(args);
-    assertEquals("entry with duplicated name created", -Status.ERROR, id);
+    assertEquals("entry with duplicated name created", Table.Error.DUPLICATE_NAME, id);
     Cursor result = DatabaseAdapter.getItemsTable().fetch("Pryl");
     assertTrue("Cursor is empty", result.moveToFirst());
     assertEquals("Wrong number of entries in cursor", 1, result.getCount());

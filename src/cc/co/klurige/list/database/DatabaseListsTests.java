@@ -119,7 +119,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     args = new ContentValues();
     args.put(Key.NAME, "20110126");
     long id = DatabaseAdapter.getListsTable().create(args);
-    assertEquals("entry with duplicated name created", -Status.ERROR, id);
+    assertEquals("entry with duplicated name created", Table.Error.DUPLICATE_NAME, id);
     Cursor result = DatabaseAdapter.getListsTable().fetch("20110126");
     assertTrue("Cursor is empty", result.moveToFirst());
     assertEquals("Wrong number of entries in cursor", 1, result.getCount());
