@@ -98,11 +98,34 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
     result.close();
   }
 
+  public void testVisibility() {
+    TextView msg = (TextView) mActivity.findViewById(cc.co.klurige.list.R.id.categories_list_empty);
+    ListView list = (ListView) mActivity.findViewById(cc.co.klurige.list.R.id.categories_list);
+    assertEquals("msg is not GONE", View.GONE, msg.getVisibility());
+    assertEquals("list is not VISIBLE", View.VISIBLE, list.getVisibility());
+    TextView t =
+        (TextView) list.getChildAt(0).findViewById(cc.co.klurige.list.R.id.categories_row_name);
+    TouchUtils.longClickView(this, t);
+    sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
+
+    final Dialog diag = mActivity.mDialog;
+    final Button okButton = (Button) diag.findViewById(android.R.id.button1);
+    mActivity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        okButton.requestFocus();
+        okButton.performClick();
+      }
+    });
+    mInstrumentation.waitForIdleSync();
+    assertEquals("list is not GONE", View.GONE, list.getVisibility());
+    assertEquals("msg is not VISIBLE", View.VISIBLE, msg.getVisibility());
+  }
+
   public void testAdd() {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.categories_add);
     TouchUtils.clickView(this, addButton);
     final Dialog diag = mActivity.mDialog;
-
     final View input = diag.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
 
     TouchUtils.tapView(this, input);
