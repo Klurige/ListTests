@@ -480,4 +480,34 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
     mInstrumentation.waitForIdleSync();
 
   }
+
+  void deleteCategory(String str) {
+    ListView list = (ListView) mActivity.findViewById(cc.co.klurige.list.R.id.categories_list);
+    TextView t;
+    int child = -1;
+    for (int i = 0; i < list.getChildCount(); i++) {
+      t = (TextView) list.getChildAt(i).findViewById(cc.co.klurige.list.R.id.categories_row_name);
+      if (t.getText() == str) {
+        child = i;
+      }
+    }
+    if (child >= 0) {
+      t =
+          (TextView) list.getChildAt(child).findViewById(
+              cc.co.klurige.list.R.id.categories_row_name);
+      TouchUtils.longClickView(this, t);
+      sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
+
+      final Dialog diag = mActivity.mDialog;
+      final Button okButton = (Button) diag.findViewById(android.R.id.button1);
+      mActivity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          okButton.requestFocus();
+          okButton.performClick();
+        }
+      });
+      mInstrumentation.waitForIdleSync();
+    }
+  }
 }
