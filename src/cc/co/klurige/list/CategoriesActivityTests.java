@@ -266,8 +266,9 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
       }
     });
     mInstrumentation.waitForIdleSync();
-    sendKeys("5*DPAD_RIGHT");
-    sendKeys(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_E);
+    sendKeys("5*DPAD_LEFT");
+    sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_E);
 
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
@@ -304,8 +305,7 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
       }
     });
     mInstrumentation.waitForIdleSync();
-    sendKeys("5*DPAD_RIGHT");
-    sendKeys(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_E);
+    sendKeys(KeyEvent.KEYCODE_E);
 
     final Button cancelButton = (Button) diag.findViewById(android.R.id.button3);
     mActivity.runOnUiThread(new Runnable() {
@@ -344,8 +344,9 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
       }
     });
     mInstrumentation.waitForIdleSync();
-    sendKeys("5*DPAD_RIGHT");
-    sendKeys(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_E);
+    sendKeys("5*DPAD_LEFT");
+    sendKeys(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT,
+        KeyEvent.KEYCODE_E);
 
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
@@ -381,8 +382,7 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
       }
     });
     mInstrumentation.waitForIdleSync();
-    sendKeys("5*DPAD_RIGHT");
-    sendKeys(KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_E);
+    sendKeys(KeyEvent.KEYCODE_E);
 
     final Button cancelButton = (Button) diag.findViewById(android.R.id.button3);
     mActivity.runOnUiThread(new Runnable() {
