@@ -152,6 +152,38 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
     assertEquals("Contents of entry is wrong.", "Mejeri", t.getText());
   }
 
+  public void testAddDeleted() {
+    addCategory("Mejeri");
+    deleteCategory("Mejeri");
+    final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.categories_add);
+    TouchUtils.clickView(this, addButton);
+    final Dialog diag = mActivity.mDialog;
+    final View input = diag.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
+
+    TouchUtils.tapView(this, input);
+    sendKeys(KeyEvent.KEYCODE_M, KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_E,
+        KeyEvent.KEYCODE_R, KeyEvent.KEYCODE_I);
+
+    final Button okButton = (Button) diag.findViewById(android.R.id.button1);
+    mActivity.runOnUiThread(new Runnable() {
+      @Override
+      public void run() {
+        okButton.requestFocus();
+        okButton.performClick();
+      }
+    });
+    mInstrumentation.waitForIdleSync();
+
+    ListView list = (ListView) mActivity.findViewById(cc.co.klurige.list.R.id.categories_list);
+    assertEquals("Number of entries in list is wrong", 2, list.getCount());
+
+    TextView t =
+        (TextView) list.getChildAt(0).findViewById(cc.co.klurige.list.R.id.categories_row_name);
+    assertEquals("First entry should be empty.", "(empty)", t.getText());
+    t = (TextView) list.getChildAt(1).findViewById(cc.co.klurige.list.R.id.categories_row_name);
+    assertEquals("Contents of entry is wrong.", "Mejeri", t.getText());
+  }
+
   public void testAddCancel() {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.categories_add);
     TouchUtils.clickView(this, addButton);
