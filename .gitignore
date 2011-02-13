@@ -4,3 +4,4 @@ gen
 ActivityStates.txt
 local.properties
 coverage
+*.swp
