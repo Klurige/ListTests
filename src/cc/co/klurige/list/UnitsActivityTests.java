@@ -74,15 +74,19 @@ public class UnitsActivityTests extends ActivityInstrumentationTestCase2<UnitsAc
       e.printStackTrace();
     }
     mActivity = getActivity();
+    assertNotNull("Context is null", UnitsActivity.getContext());
   }
 
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    mActivity = null;
+    Thread.sleep(1000);
     mInstrumentation = getInstrumentation();
     Context ctx = mInstrumentation.getTargetContext();
     DatabaseAdapter dba = DatabaseAdapter.getDatabaseAdapter(ctx);
     dba.close();
+    assertNull("Context is not null", UnitsActivity.getContext());
   }
 
   public void testPreconditions() {
@@ -496,18 +500,12 @@ public class UnitsActivityTests extends ActivityInstrumentationTestCase2<UnitsAc
 
     final EditText input =
         (EditText) diag.findViewById(cc.co.klurige.list.R.id.unit_dialogue_name);
-    mActivity.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        input.setText(str);
-      }
-    });
-    mInstrumentation.waitForIdleSync();
 
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        input.setText(str);
         okButton.requestFocus();
         okButton.performClick();
       }
