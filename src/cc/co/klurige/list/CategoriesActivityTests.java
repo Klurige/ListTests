@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import cc.co.klurige.list.database.DatabaseAdapter;
@@ -74,15 +75,21 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
       e.printStackTrace();
     }
     mActivity = getActivity();
+    assertNotNull("Context is null", CategoriesActivity.getContext());
   }
 
   @Override
   protected void tearDown() throws Exception {
     super.tearDown();
+    mActivity = null;
+    Thread.sleep(1000);
     mInstrumentation = getInstrumentation();
     Context ctx = mInstrumentation.getTargetContext();
     DatabaseAdapter dba = DatabaseAdapter.getDatabaseAdapter(ctx);
     dba.close();
+    mInstrumentation.waitForIdleSync();
+    assertNull("Context is not null", CategoriesActivity.getContext());
+
   }
 
   public void testPreconditions() {
@@ -185,12 +192,14 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
   }
 
   public void testAddCancel() {
-    final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.categories_add);
+    final ImageButton addButton =
+        (ImageButton) mActivity.findViewById(cc.co.klurige.list.R.id.categories_add);
     TouchUtils.clickView(this, addButton);
     final Dialog diag = mActivity.mDialog;
-    final View input = diag.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
+    // final View input =
+    // diag.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
 
-    TouchUtils.tapView(this, input);
+    // TouchUtils.tapView(this, input);
     sendKeys(KeyEvent.KEYCODE_M, KeyEvent.KEYCODE_E, KeyEvent.KEYCODE_J, KeyEvent.KEYCODE_E,
         KeyEvent.KEYCODE_R, KeyEvent.KEYCODE_I);
 
@@ -500,18 +509,12 @@ public class CategoriesActivityTests extends ActivityInstrumentationTestCase2<Ca
 
     final EditText input =
         (EditText) diag.findViewById(cc.co.klurige.list.R.id.category_dialogue_name);
-    mActivity.runOnUiThread(new Runnable() {
-      @Override
-      public void run() {
-        input.setText(str);
-      }
-    });
-    mInstrumentation.waitForIdleSync();
 
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
       @Override
       public void run() {
+        input.setText(str);
         okButton.requestFocus();
         okButton.performClick();
       }
