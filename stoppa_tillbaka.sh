@@ -1,8 +1,7 @@
 #!/bin/bash
-mv bortkopplade/src/cc/co/klurige/list/database src/cc/co/klurige/list/.
-mv bortkopplade/src/cc/co/klurige/list/CategoriesActivityTests.java src/cc/co/klurige/list/.
+mv bortkopplade/src/cc/co/klurige/list/* src/cc/co/klurige/list/.
 
-rm -f bin
+rm -rf bin gen/* coverage instrumented libs
 adb uninstall cc.co.klurige.list
 adb uninstall cc.co.klurige.list.database
 
