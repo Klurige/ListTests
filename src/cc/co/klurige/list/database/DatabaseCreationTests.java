@@ -142,4 +142,13 @@ public class DatabaseCreationTests extends AndroidTestCase {
     }
     assertTrue("Upgrade should have failed.", isSuccess);
   }
+
+  public void testStaticClasses() {
+    Table.Key key = new Table.Key();
+    assertNotNull("Object could not be instantiated", key);
+    Table.Error error = new Table.Error();
+    assertNotNull("Object could not be instantiated", error);
+    Table.Status status = new Table.Status();
+    assertNotNull("Object could not be instantiated", status);
+  }
 }

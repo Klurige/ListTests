@@ -153,6 +153,7 @@ public class UnitsActivityTests extends ActivityInstrumentationTestCase2<UnitsAc
         (TextView) list.getChildAt(0).findViewById(cc.co.klurige.list.R.id.units_row_name);
     assertEquals("First entry should be empty.", "(empty)", t.getText());
     t = (TextView) list.getChildAt(1).findViewById(cc.co.klurige.list.R.id.units_row_name);
+    // Make sure autoCap is turned off.
     assertEquals("Contents of entry is wrong.", "liter", t.getText());
   }
 

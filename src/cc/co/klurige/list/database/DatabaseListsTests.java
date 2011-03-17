@@ -81,7 +81,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of list should column 1 is wrong.", "20110126", result.getString(1));
     assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of list column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
     assertTrue("Value of list column 3 is wrong.", (result.getLong(3) > ts_before.getTime())
         && (result.getLong(3) < ts_after.getTime()));
@@ -146,7 +146,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of list should column 1 is wrong.", "20110126", result.getString(1));
     assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of list column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
     assertEquals("Name of list column 3 is wrong.", "timestamp", result.getColumnName(3));
     result.close();
@@ -272,7 +272,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of list should column 1 is wrong.", "20110126", result.getString(1));
     assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of list column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
     assertEquals("Name of list column 3 is wrong.", "timestamp", result.getColumnName(3));
 
@@ -281,7 +281,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of list column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of list should column 1 is wrong.", "20110127", result.getString(1));
     assertEquals("Name of list column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of list column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of list column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of list column 2 is wrong.", "status", result.getColumnName(2));
     assertEquals("Name of list column 3 is wrong.", "timestamp", result.getColumnName(3));
     result.close();
@@ -336,7 +336,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of column 1 is wrong.", "20110126", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
   }
@@ -359,7 +359,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of column 1 is wrong.", "20110126", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of column 2 is wrong.", 512, result.getInt(2));
+    assertEquals("Value of column 2 is wrong.", 513, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
 
@@ -371,7 +371,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of column 1 is wrong.", "20110127", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     result.close();
 
@@ -483,7 +483,7 @@ public class DatabaseListsTests extends AndroidTestCase {
     assertEquals("Name of column 0 is wrong.", "_id", result.getColumnName(0));
     assertEquals("Value of column 1 is wrong.", "20110127", result.getString(1));
     assertEquals("Name of column 1 is wrong.", "name", result.getColumnName(1));
-    assertEquals("Value of column 2 is wrong.", 0, result.getInt(2));
+    assertEquals("Value of column 2 is wrong.", 1, result.getInt(2));
     assertEquals("Name of column 2 is wrong.", "status", result.getColumnName(2));
     assertEquals("Name of column 3 is wrong.", "timestamp", result.getColumnName(3));
     result.close();
