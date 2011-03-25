@@ -95,7 +95,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
   public void testAddCancel() {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
 
     final Button cancelButton = (Button) diag.findViewById(android.R.id.button3);
     mActivity.runOnUiThread(new Runnable() {
@@ -136,7 +136,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
   public void testAdd() {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final View input = diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
 
     TouchUtils.longClickView(this, input);
@@ -164,7 +164,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
   public void testAddProposed() {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -188,7 +188,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     addList(null);
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -215,7 +215,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     addList(null);
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -245,7 +245,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
 
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final View input = diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
 
     TouchUtils.longClickView(this, input);
@@ -276,7 +276,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
 
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final View input = diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
 
     TouchUtils.longClickView(this, input);
@@ -311,7 +311,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     TouchUtils.longClickView(this, t);
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
 
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final View input = diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -347,7 +347,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     TouchUtils.longClickView(this, t);
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
 
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final View input = diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -382,7 +382,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     TouchUtils.longClickView(this, t);
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
 
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final View input = diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -416,7 +416,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     TouchUtils.longClickView(this, t);
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
 
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -442,7 +442,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
     TouchUtils.longClickView(this, t);
     sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
 
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final Button cancelButton = (Button) diag.findViewById(android.R.id.button3);
     mActivity.runOnUiThread(new Runnable() {
       @Override
@@ -514,7 +514,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
   private void addList(final String str) {
     final View addButton = mActivity.findViewById(cc.co.klurige.list.R.id.lists_add);
     TouchUtils.clickView(this, addButton);
-    final Dialog diag = mActivity.mDialog;
+    final Dialog diag = mActivity.getDialog();
     final EditText input =
         (EditText) diag.findViewById(cc.co.klurige.list.R.id.lists_dialogue_name);
     final Button okButton = (Button) diag.findViewById(android.R.id.button1);
@@ -548,7 +548,7 @@ public class ListsActivityTests extends ActivityInstrumentationTestCase2<ListsAc
       TouchUtils.longClickView(this, t);
       sendKeys(KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_DPAD_CENTER);
 
-      final Dialog diag = mActivity.mDialog;
+      final Dialog diag = mActivity.getDialog();
       final Button okButton = (Button) diag.findViewById(android.R.id.button1);
       mActivity.runOnUiThread(new Runnable() {
         @Override
